@@ -1,0 +1,40 @@
+H​E‌L‍L﻿O
+4 	 4	12
+A: 65 >> 1000001
+‌​​​​​‌‍﻿decoy 
+ 
+A: 65 >> 1000001Character 0 => -30
+Character 1 => -128
+Character 2 => -116
+Character 3 => -30
+Character 4 => -128
+Character 5 => -117
+Character 6 => -30
+Character 7 => -128
+Character 8 => -117
+Character 9 => -30
+Character 10 => -128
+Character 11 => -117
+Character 12 => -30
+Character 13 => -128
+Character 14 => -117
+Character 15 => -30
+Character 16 => -128
+Character 17 => -117
+Character 18 => -30
+Character 19 => -128
+Character 20 => -116
+Character 21 => -30
+Character 22 => -128
+Character 23 => -115
+Character 24 => -17
+Character 25 => -69
+Character 26 => -65
+Character 27 => 100
+Character 28 => 101
+Character 29 => 99
+Character 30 => 111
+Character 31 => 121
+
+‌​​​​​‌‍﻿decoy 
+ 
