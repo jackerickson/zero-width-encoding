@@ -1,9 +1,3 @@
-/*
-** EPITECH PROJECT, 2019
-** test
-** File description:
-** encode
-*/
 
 #include <string.h>
 #include <stdlib.h>
