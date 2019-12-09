@@ -77,7 +77,7 @@ char* strip_decoy(wchar_t* wide_message, wchar_t* buffer){
     int isKeyTerminated = 0;
     for(int i = 0; i < wcslen(wide_message); i++){
         buffer[i] = wide_message[i];
-        wprintf(L"%ld => %ld\n", buffer[i], wide_message[i]);
+        //wprintf(L"%ld => %ld\n", buffer[i], wide_message[i]);
         if(buffer[i]==0xfeff){
             isKeyTerminated=1;
             break;
@@ -97,40 +97,60 @@ void convertWide(char* bytes, wchar_t* buffer){
     }
     return;
 }
-char bitsToChar(char bits[]){
+
+//by having wordsize we make it easier to port the code to bigger data encoding sizes.
+char bitsToChar(int bits[], int wordSize){
     int val = 0;
-    for(int i = 0; i < sizeof(bits); i++){
+    for(int i = 0; i < wordSize; i++){
         int bit;
-        switch(bits[i]){
-            case '1':
-                bit = 1;
-                break;
-            case '0':
-                bit = 0;
-                break;
+        wprintf(L"%d",bits[i]);
+        if(bits[i] == 1){
+            val += 1 << (wordSize-1 - i);
         }
         //printf("adding %d to val: %d\n",bit << (6 - i), val);
-        val += bit << (6 - i);
-
     }
+    wprintf(L"==> %c\n",val);
+
     return (char)val;
 }
 
-void deserialize(wchar_t* stripped_message, char key[], int key_len){
-    int buff[7];
+
+/*we gonna:
+-iterate through the encoding
+since encoding is highest bit first and for functionality do not assume value size...
+must store, then iterate through the buffer 
+
+*/
+void deserialize(wchar_t* stripped_message, char* plainText){
+    int buff[32];
+    plainText[0] = '\0';
+    int wordSize = 0;
+    char insert;
+    int j  = 0;
+    //iterate through the key
     for(int i = 0; i < wcslen(stripped_message); i++){
-        for(int j = 0; j )
         switch(stripped_message[i]){
             case ZERO:
-                buff[i] = 0
+                buff[j++] = 0;
+                wordSize++;
                 break;
             case ONE:
-                
+                buff[j++] = 1;
+                wordSize++;
                 break;
+            case WORD:
+                insert = bitsToChar(buff, wordSize);
+                strcat(plainText, &insert);
+                wprintf(L"Found an encoded character! : %c\n",insert);
+                memset(buff, 0, 32*sizeof(int));
+                wordSize = 0;
+                j=0;
+                break;
+            case END:
+                wprintf(L"reached break line at character %d \n", i);
+                return;
         }
-
     }
-
 }
 char* decode(char* message){
 
@@ -139,23 +159,29 @@ char* decode(char* message){
     wchar_t* stripped_message = malloc(strlen(message)*sizeof(wchar_t));
     wprintf(L"The wide char: %ls \n", wide_message);
     strip_decoy(wide_message,stripped_message);
-    int key_len = wcslen(stripped_message)/7;
-    char key[key_len];
-    deserialize(stripped_message, key, key_len);
+    // the plain text will be far to big, but we know no matter the encoding it will fit.
+    char* plainText = malloc(wcslen(stripped_message));
+    deserialize(stripped_message, plainText);
     
     //printf("Message in decode: %s", message);
     free(wide_message);
     free(stripped_message);
 
-    return message;
+    return plainText;
 }
 int main(int argc, char* argv[]){	
-    setlocale(LC_ALL, "en_US.UTF-8");
     //printf("H\u200BE\u200CL\u200DL\uFEFFO\n");
     //printf("%d \t %d\t%d\n", sizeof("\u200B"), sizeof(ZERO_unicode),sizeof("text string"));
     
     //printf("%s\n", encode("A", "decoy"));
     //printf("\n%s \n \n", decode(encode(argv[1], "decoy")));
-    printf("%s\n", decode(encode("A", "decoy")));
+    setlocale(LC_ALL, "en_US.UTF-8");
+    char* decoded;
+    char* encoded;
+    encoded = encode("THIS IS ENCODED", "decoy");
+    decoded = decode(encoded);
+    wprintf(L"This is the decoded message : %s \n\n", encoded);
+
+    wprintf(L"This is the decoded message: %s\n", decoded);
 
 }
